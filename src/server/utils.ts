@@ -1,7 +1,7 @@
 import {
   ESLintImportDeclaration,
-  ESLintModuleDeclaration,
-  ESLintStatement,
+  ESLintModuleDeclaration, ESLintNode,
+  ESLintStatement, ESLintVariableDeclaration,
 } from 'vue-eslint-parser/ast/nodes';
 import {Token} from 'vue-eslint-parser/ast/tokens';
 import {model} from './Model';
@@ -14,6 +14,21 @@ import {resolve, extname, dirname} from 'path';
  */
 export const getImportDeclaration = (nodeArr: (ESLintStatement | ESLintModuleDeclaration)[]): ESLintImportDeclaration[] => { // eslint-disable-line
   return nodeArr.filter((node) => node.type === 'ImportDeclaration') as ESLintImportDeclaration[];
+};
+
+export const getDynamicImportDeclaration = (nodeArr: (ESLintStatement | ESLintModuleDeclaration | ESLintVariableDeclaration)[]) => {
+  const nodesWithImports = nodeArr.filter((node) => {
+    const isVariableDeclaration = node.type === 'VariableDeclaration';
+    if (isVariableDeclaration && 'declarations' in node) {
+      const isImport = (node.declarations?.[0].init as ESLintNode).type === 'ImportExpression';
+
+      return isVariableDeclaration && isImport;
+    }
+
+    return false;
+  }) as unknown as ESLintVariableDeclaration[];
+
+  return nodesWithImports.map((node) => node.declarations[0].init as unknown as ESLintImportDeclaration);
 };
 
 /**

@@ -1,7 +1,7 @@
 import {parse} from 'vue-eslint-parser';
 import {ESLintImportDeclaration, ESLintProgram} from 'vue-eslint-parser/ast/nodes';
 import {Token} from 'vue-eslint-parser/ast/tokens';
-import {getImportDeclaration, getDeclarationSyntax} from './utils';
+import {getImportDeclaration, getDeclarationSyntax, getDynamicImportDeclaration} from './utils';
 import FileReport = vueComponentAnalyzer.FileReport;
 import {Stats} from 'fs';
 
@@ -50,7 +50,10 @@ export class VueComponent {
       this._props = this.getProps(esLintProgram.tokens);
     }
 
-    this._importDeclaration = getImportDeclaration(esLintProgram.body);
+    this._importDeclaration = [
+      ...getImportDeclaration(esLintProgram.body),
+      ...getDynamicImportDeclaration(esLintProgram.body),
+    ];
   }
 
   private getProps(tokens: Token[]): string {

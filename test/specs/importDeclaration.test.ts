@@ -82,4 +82,12 @@ describe('import declaration test', () => {
 
     expect(json).toMatchSnapshot();
   });
+
+  it('importDynamic.vue', async () => {
+    const filename = 'declarationTest/importDynamic';
+    const declaration = await analyzer.getImportDeclarationTree(join(fixturesDir, `${filename}.vue`), [], true);
+    const json = JSON.stringify(declaration).slice(0);
+
+    expect(json).toMatchSnapshot();
+  });
 });
